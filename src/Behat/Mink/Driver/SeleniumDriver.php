@@ -448,12 +448,24 @@ JS;
 var node = this.browserbot.locateElementByXPath("$xpathEscaped", window.document);
 if (node.tagName == 'SELECT') {
     var i, l = node.length;
+    var event;
+
     for (i = 0; i < l; i++) {
         if (node[i].value == "$valueEscaped") {
             node[i].selected = true;
         } else if (!$multipleJS) {
             node[i].selected = false;
         }
+    }
+
+    if (document.createEvent) {
+        event = document.createEvent('HTMLEvents');
+        event.initEvent("change", true, true);
+        node.dispatchEvent(event);
+    } else {
+        event = document.createEventObect();
+        event.eventType = "change";
+        node.fireEvent("onchange", event);
     }
 } else {
     var nodes = window.document.getElementsByName(node.getAttribute('name'));
